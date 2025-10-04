@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Magical Habit Tracker</title>
+    <title>Football Goal Tracker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(to bottom right, #fbcfe8, #ddd6fe, #93c5fd);
+            background: linear-gradient(to bottom right, #059669, #047857, #065f46);
             min-height: 100vh;
             padding: 1rem;
         }
@@ -33,11 +30,11 @@
             border-radius: 1.5rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             overflow: hidden;
-            border: 4px solid #f9a8d4;
+            border: 4px solid #065f46;
         }
 
         .header {
-            background: linear-gradient(to right, #ec4899, #a855f7, #3b82f6);
+            background: linear-gradient(to right, #065f46, #059669, #047857);
             padding: 1.5rem;
             color: white;
             position: relative;
@@ -54,12 +51,19 @@
             z-index: 10;
         }
 
+        .header-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.3) 40px, rgba(255,255,255,0.3) 80px);
+        }
+
         .header-icon {
             position: absolute;
             top: 0;
             right: 0;
             font-size: 8rem;
-            opacity: 0.2;
+            opacity: 0.1;
         }
 
         .stats {
@@ -71,8 +75,8 @@
         }
 
         .stat-box {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
             padding: 0.75rem 1.25rem;
             backdrop-filter: blur(4px);
             border: 2px solid rgba(255, 255, 255, 0.5);
@@ -84,8 +88,8 @@
 
         .tabs {
             display: flex;
-            border-bottom: 4px solid #f9a8d4;
-            background: linear-gradient(to right, #fdf2f8, #faf5ff);
+            border-bottom: 4px solid #065f46;
+            background: linear-gradient(to right, #dcfce7, #bbf7d0);
         }
 
         .tab {
@@ -100,37 +104,37 @@
 
         .tab.active {
             background: white;
-            color: #ec4899;
-            border-bottom: 4px solid #ec4899;
+            color: #065f46;
+            border-bottom: 4px solid #059669;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .tab:not(.active) {
-            color: #6b7280;
+            color: #4b5563;
         }
 
         .tab:not(.active):hover {
-            color: #ec4899;
+            color: #065f46;
         }
 
         .content {
             padding: 1.5rem;
-            background: linear-gradient(to bottom right, rgba(253, 242, 248, 0.5), rgba(250, 245, 255, 0.5));
+            background: linear-gradient(to bottom right, rgba(220, 252, 231, 0.5), rgba(187, 247, 208, 0.5));
         }
 
         .section {
             margin-bottom: 1.5rem;
-            background: linear-gradient(to right, #fdf2f8, #faf5ff);
-            border-radius: 1.5rem;
+            background: linear-gradient(to right, #dcfce7, #bbf7d0);
+            border-radius: 1rem;
             padding: 1.25rem;
-            border: 4px solid #f9a8d4;
+            border: 4px solid #059669;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .section h3 {
             font-size: 1.25rem;
             font-weight: bold;
-            color: #ec4899;
+            color: #065f46;
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
@@ -146,22 +150,22 @@
         .input-group input {
             flex: 1;
             padding: 0.75rem 1rem;
-            border: 3px solid #f9a8d4;
-            border-radius: 1rem;
+            border: 3px solid #4ade80;
+            border-radius: 0.75rem;
             font-weight: bold;
             font-size: 1rem;
         }
 
         .input-group input:focus {
-            border-color: #ec4899;
+            border-color: #059669;
             outline: none;
         }
 
         .btn {
-            background: linear-gradient(to right, #ec4899, #db2777);
+            background: linear-gradient(to right, #059669, #047857);
             color: white;
             padding: 0.75rem 1.25rem;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             border: none;
             font-weight: bold;
             cursor: pointer;
@@ -173,7 +177,7 @@
         }
 
         .btn:hover {
-            background: linear-gradient(to right, #db2777, #be185d);
+            background: linear-gradient(to right, #047857, #065f46);
         }
 
         .btn-clear {
@@ -193,9 +197,9 @@
 
         .goal-tag {
             background: white;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             padding: 0.5rem 1rem;
-            border: 3px solid #f9a8d4;
+            border: 3px solid #10b981;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -205,17 +209,17 @@
         .goal-tag span {
             font-weight: bold;
             font-size: 0.875rem;
-            color: #be185d;
+            color: #065f46;
         }
 
         .delete-btn {
-            color: #ec4899;
+            color: #ef4444;
             cursor: pointer;
             margin-left: 0.25rem;
         }
 
         .delete-btn:hover {
-            color: #be185d;
+            color: #dc2626;
         }
 
         .calendar {
@@ -226,7 +230,7 @@
 
         .day {
             aspect-ratio: 1;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             padding: 0.5rem;
             font-weight: bold;
             font-size: 1.125rem;
@@ -248,38 +252,38 @@
         }
 
         .day.today {
-            background: linear-gradient(to bottom right, #fcd34d, #f9a8d4);
+            background: linear-gradient(to bottom right, #f59e0b, #ea580c);
             color: white;
-            border-color: #fcd34d;
+            border-color: #f59e0b;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             animation: pulse 2s infinite;
         }
 
         .day.completed {
-            background: linear-gradient(to bottom right, #ec4899, #a855f7);
+            background: linear-gradient(to bottom right, #10b981, #047857);
             color: white;
-            border-color: #ec4899;
+            border-color: #065f46;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .day.partial {
-            background: linear-gradient(to bottom right, #fbcfe8, #ddd6fe);
-            color: #7c3aed;
-            border-color: #f9a8d4;
+            background: linear-gradient(to bottom right, #bbf7d0, #86efac);
+            color: #064e3b;
+            border-color: #10b981;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .day.default {
             background: white;
-            border-color: #f9a8d4;
+            border-color: #86efac;
         }
 
         .day.default:hover {
-            border-color: #ec4899;
-            background: #fdf2f8;
+            border-color: #10b981;
+            background: #ecfdf5;
         }
 
-        .star {
+        .trophy {
             position: absolute;
             top: -0.5rem;
             right: -0.5rem;
@@ -309,11 +313,11 @@
             width: 100%;
             max-height: 80vh;
             overflow: auto;
-            border: 4px solid #ec4899;
+            border: 4px solid #065f46;
         }
 
         .modal-header {
-            background: linear-gradient(to right, #ec4899, #a855f7, #3b82f6);
+            background: linear-gradient(to right, #065f46, #059669, #047857);
             color: white;
             padding: 1.5rem;
             border-radius: 0.75rem 0.75rem 0 0;
@@ -361,7 +365,7 @@
 
         .modal-content {
             padding: 1.5rem;
-            background: linear-gradient(to bottom right, #fdf2f8, #faf5ff);
+            background: linear-gradient(to bottom right, #ecfdf5, #d1fae5);
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
@@ -369,7 +373,7 @@
 
         .goal-item {
             width: 100%;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             padding: 1rem;
             display: flex;
             align-items: center;
@@ -381,18 +385,18 @@
         }
 
         .goal-item.completed {
-            background: linear-gradient(to right, #ec4899, #a855f7);
+            background: linear-gradient(to right, #10b981, #047857);
             color: white;
-            border-color: #ec4899;
+            border-color: #065f46;
         }
 
         .goal-item:not(.completed) {
             background: white;
-            border-color: #f9a8d4;
+            border-color: #4ade80;
         }
 
         .goal-item:not(.completed):hover {
-            background: #fdf2f8;
+            background: #ecfdf5;
         }
 
         .goal-emoji {
@@ -412,25 +416,25 @@
 
         .chart-container {
             margin-bottom: 1.5rem;
-            border-radius: 1.5rem;
+            border-radius: 1rem;
             padding: 1.5rem;
             border: 4px solid;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        .chart-container.pink {
-            background: linear-gradient(to bottom right, #fdf2f8, #fce7f3);
-            border-color: #f9a8d4;
+        .chart-container.green {
+            background: linear-gradient(to bottom right, #dcfce7, #bbf7d0);
+            border-color: #059669;
         }
 
-        .chart-container.purple {
-            background: linear-gradient(to bottom right, #faf5ff, #ede9fe);
-            border-color: #a855f7;
+        .chart-container.blue {
+            background: linear-gradient(to bottom right, #dbeafe, #bfdbfe);
+            border-color: #2563eb;
         }
 
-        .chart-container.yellow {
-            background: linear-gradient(to bottom right, #fef3c7, #fef3c7);
-            border-color: #fcd34d;
+        .chart-container.orange {
+            background: linear-gradient(to bottom right, #fed7aa, #fdba74);
+            border-color: #ea580c;
         }
 
         .chart-title {
@@ -442,28 +446,29 @@
             gap: 0.5rem;
         }
 
-        .chart {
+        .chart-wrapper {
             width: 100%;
             height: 250px;
+            position: relative;
         }
 
         .total-goals {
             margin-top: 1rem;
             text-align: center;
             background: white;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             padding: 1rem;
-            border: 3px solid #a855f7;
+            border: 3px solid #3b82f6;
         }
 
         .total-goals p:first-child {
             font-size: 2.25rem;
             font-weight: bold;
-            color: #7c3aed;
+            color: #1e40af;
         }
 
         .total-goals p:last-child {
-            color: #ec4899;
+            color: #059669;
             font-weight: 600;
             margin-top: 0.5rem;
         }
@@ -482,7 +487,7 @@
             background: white;
             border-radius: 0.75rem;
             padding: 0.75rem;
-            border: 2px solid #f9a8d4;
+            border: 2px solid #4ade80;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
@@ -506,7 +511,7 @@
         }
 
         .achievement {
-            border-radius: 1.5rem;
+            border-radius: 1rem;
             padding: 1.5rem;
             border: 4px solid;
             transition: all 0.3s;
@@ -514,9 +519,8 @@
         }
 
         .achievement.unlocked {
-            background: linear-gradient(to bottom right, #fef3c7, #fbcfe8, #ddd6fe);
-            border-color: #fcd34d;
-            animation: pulse 2s infinite;
+            background: linear-gradient(to bottom right, #fef3c7, #fde68a);
+            border-color: #f59e0b;
         }
 
         .achievement.locked {
@@ -538,12 +542,12 @@
         .achievement-info h3 {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #be185d;
+            color: #065f46;
             margin-bottom: 0.25rem;
         }
 
         .achievement-info p {
-            color: #7c3aed;
+            color: #4b5563;
             font-weight: 600;
         }
 
@@ -560,7 +564,7 @@
         .floating-icon {
             position: fixed;
             font-size: 4rem;
-            opacity: 0.2;
+            opacity: 0.1;
             z-index: 0;
         }
 
@@ -594,21 +598,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.3; }
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.2; }
         }
 
         .hidden {
             display: none;
-        }
-
-        .sparkle {
-            animation: sparkle 1.5s infinite;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
         }
 
         .storage-controls {
@@ -616,32 +611,41 @@
             justify-content: flex-end;
             margin-top: 1rem;
         }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #065f46;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <!-- Floating decorative elements -->
-    <div class="floating-icon">🦄</div>
-    <div class="floating-icon">🌈</div>
-    <div class="floating-icon">✨</div>
-    <div class="floating-icon">💖</div>
+    <!-- Floating football elements -->
+    <div class="floating-icon">⚽</div>
+    <div class="floating-icon">🏆</div>
+    <div class="floating-icon">🥅</div>
+    <div class="floating-icon">⚡</div>
 
     <div class="container">
         <div class="card">
-            <!-- Header with Unicorn Theme -->
+            <!-- Header with Football Theme -->
             <div class="header">
-                <div class="header-icon">🦄</div>
+                <div class="header-pattern"></div>
+                <div class="header-icon">⚽</div>
                 <h1>
-                    <span style="font-size: 3rem;">🦄</span>
-                    My Magical Habit Tracker
-                    <i class="fas fa-sparkles sparkle" style="font-size: 2.5rem;"></i>
+                    <span style="font-size: 3rem;">⚽</span>
+                    My Goal Tracker
+                    <i class="fas fa-trophy" style="font-size: 2.5rem;"></i>
                 </h1>
                 <div class="stats">
                     <div class="stat-box">
-                        <i class="fas fa-star" style="color: #fcd34d;"></i>
+                        <i class="fas fa-bullseye"></i>
                         <span>Today: <span id="today-points">0</span></span>
                     </div>
                     <div class="stat-box">
-                        <i class="fas fa-heart" style="color: #f9a8d4;"></i>
+                        <i class="fas fa-bolt"></i>
                         <span>This Month: <span id="month-points">0</span></span>
                     </div>
                 </div>
@@ -649,9 +653,9 @@
 
             <!-- Tabs -->
             <div class="tabs">
-                <div class="tab active" data-tab="tracker">🌈 My Tracker</div>
-                <div class="tab" data-tab="stats">📊 My Progress</div>
-                <div class="tab" data-tab="rewards">🏆 My Rewards</div>
+                <div class="tab active" data-tab="tracker">🎯 My Tracker</div>
+                <div class="tab" data-tab="stats">📊 Stats</div>
+                <div class="tab" data-tab="rewards">🏆 Trophies</div>
             </div>
 
             <!-- Content -->
@@ -661,11 +665,11 @@
                     <!-- Add Goal Section -->
                     <div class="section">
                         <h3>
-                            <i class="fas fa-star" style="color: #ec4899;"></i>
+                            <i class="fas fa-bullseye"></i>
                             My Goals
                         </h3>
                         <div class="input-group">
-                            <input type="text" id="new-goal-input" placeholder="Add a magical goal...">
+                            <input type="text" id="new-goal-input" placeholder="Add a new goal...">
                             <button class="btn" id="add-goal-btn">
                                 <i class="fas fa-plus"></i> Add
                             </button>
@@ -681,8 +685,8 @@
                     </div>
 
                     <!-- Calendar -->
-                    <h3 style="font-size: 1.5rem; font-weight: bold; color: #ec4899; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 2rem;">🌸</span>
+                    <h3 style="font-size: 1.5rem; font-weight: bold; color: #065f46; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 2rem;">⚽</span>
                         <span id="current-month-year">June 2023</span>
                     </h3>
                     <div class="calendar" id="calendar">
@@ -692,46 +696,46 @@
 
                 <!-- Stats Tab -->
                 <div id="stats-content" class="tab-content hidden">
-                    <h2 style="font-size: 1.875rem; font-weight: bold; color: #ec4899; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <h2 style="font-size: 1.875rem; font-weight: bold; color: #065f46; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fas fa-chart-line"></i>
-                        My Magical Progress
-                        <i class="fas fa-sparkles sparkle" style="color: #a855f7;"></i>
+                        My Performance
+                        <i class="fas fa-trophy" style="color: #d97706;"></i>
                     </h2>
                     
                     <!-- Daily Points Chart -->
-                    <div class="chart-container pink">
+                    <div class="chart-container green">
                         <h3 class="chart-title">
-                            <i class="fas fa-star" style="color: #ec4899;"></i>
-                            Daily Sparkle Points
+                            <i class="fas fa-bullseye"></i>
+                            Daily Goals Scored
                         </h3>
-                        <div class="chart" id="daily-chart">
-                            <!-- Chart will be rendered here -->
+                        <div class="chart-wrapper">
+                            <canvas id="daily-chart"></canvas>
                         </div>
                     </div>
 
                     <!-- Cumulative Points Chart -->
-                    <div class="chart-container purple">
+                    <div class="chart-container blue">
                         <h3 class="chart-title">
-                            <i class="fas fa-heart" style="color: #a855f7;"></i>
-                            Total Magic Collected
+                            <i class="fas fa-bolt"></i>
+                            Total Goals This Month
                         </h3>
-                        <div class="chart" id="cumulative-chart">
-                            <!-- Chart will be rendered here -->
+                        <div class="chart-wrapper">
+                            <canvas id="cumulative-chart"></canvas>
                         </div>
                         <div class="total-goals">
-                            <p id="total-goals-text">0 Points! 🎉✨</p>
-                            <p>You're doing amazing!</p>
+                            <p id="total-goals-text">0 Goals! 🎯⚽</p>
+                            <p>Keep crushing it, champ!</p>
                         </div>
                     </div>
 
                     <!-- Pie Chart for Goals -->
-                    <div class="chart-container yellow hidden" id="pie-chart-container">
+                    <div class="chart-container orange hidden" id="pie-chart-container">
                         <h3 class="chart-title">
-                            <span style="font-size: 1.5rem;">🌈</span>
-                            My Goal Rainbow
+                            <span style="font-size: 1.5rem;">📊</span>
+                            Goal Breakdown
                         </h3>
-                        <div class="chart" id="pie-chart">
-                            <!-- Pie chart will be rendered here -->
+                        <div class="chart-wrapper">
+                            <canvas id="pie-chart"></canvas>
                         </div>
                         <div class="pie-legend" id="pie-legend">
                             <!-- Legend items will be added here dynamically -->
@@ -741,10 +745,10 @@
 
                 <!-- Rewards Tab -->
                 <div id="rewards-content" class="tab-content hidden">
-                    <h2 style="font-size: 1.875rem; font-weight: bold; color: #ec4899; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-trophy" style="color: #fcd34d;"></i>
-                        My Magical Achievements
-                        <span style="font-size: 2rem;">🦄</span>
+                    <h2 style="font-size: 1.875rem; font-weight: bold; color: #065f46; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-trophy" style="color: #d97706;"></i>
+                        Trophy Cabinet
+                        <span style="font-size: 2rem;">🏆</span>
                     </h2>
                     <div class="achievements-grid" id="achievements-grid">
                         <!-- Achievements will be added here dynamically -->
@@ -758,10 +762,10 @@
     <div class="modal-overlay hidden" id="day-modal">
         <div class="modal">
             <div class="modal-header">
-                <div class="modal-header-icon">🦄</div>
+                <div class="modal-header-icon">⚽</div>
                 <div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10;">
                     <h2>
-                        <span style="font-size: 2rem;">🌈</span>
+                        <span style="font-size: 2rem;">🎯</span>
                         <span id="modal-date">June 15</span>
                     </h2>
                     <button class="modal-close" id="close-modal">
@@ -769,7 +773,7 @@
                     </button>
                 </div>
                 <p class="modal-stats">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-bullseye"></i>
                     <span id="modal-points">0 / 0 goals scored</span>
                 </p>
             </div>
@@ -779,11 +783,11 @@
         </div>
     </div>
 
-    <script type="text/babel">
+    <script>
         // Storage keys
         const STORAGE_KEYS = {
-            GOALS: 'magical_habit_tracker_goals',
-            COMPLETIONS: 'magical_habit_tracker_completions'
+            GOALS: 'football_goal_tracker_goals',
+            COMPLETIONS: 'football_goal_tracker_completions'
         };
 
         // App state
@@ -793,7 +797,12 @@
             completions: {},
             selectedDay: null,
             currentMonth: new Date().getMonth(),
-            currentYear: new Date().getFullYear()
+            currentYear: new Date().getFullYear(),
+            charts: {
+                daily: null,
+                cumulative: null,
+                pie: null
+            }
         };
 
         // DOM elements
@@ -818,6 +827,7 @@
             },
             dailyChart: document.getElementById('daily-chart'),
             cumulativeChart: document.getElementById('cumulative-chart'),
+            pieChart: document.getElementById('pie-chart'),
             pieChartContainer: document.getElementById('pie-chart-container'),
             pieLegend: document.getElementById('pie-legend'),
             totalGoalsText: document.getElementById('total-goals-text'),
@@ -836,7 +846,7 @@
                     state.goals = [
                         { id: 1, name: 'Brush Teeth', emoji: '🦷' },
                         { id: 2, name: 'Do Homework', emoji: '📚' },
-                        { id: 3, name: 'Practice Piano', emoji: '🎹' }
+                        { id: 3, name: 'Practice Football', emoji: '⚽' }
                     ];
                 }
 
@@ -851,7 +861,7 @@
                 state.goals = [
                     { id: 1, name: 'Brush Teeth', emoji: '🦷' },
                     { id: 2, name: 'Do Homework', emoji: '📚' },
-                    { id: 3, name: 'Practice Piano', emoji: '🎹' }
+                    { id: 3, name: 'Practice Football', emoji: '⚽' }
                 ];
                 state.completions = {};
             }
@@ -873,7 +883,7 @@
                 state.goals = [
                     { id: 1, name: 'Brush Teeth', emoji: '🦷' },
                     { id: 2, name: 'Do Homework', emoji: '📚' },
-                    { id: 3, name: 'Practice Piano', emoji: '🎹' }
+                    { id: 3, name: 'Practice Football', emoji: '⚽' }
                 ];
                 state.completions = {};
                 
@@ -883,7 +893,7 @@
                 updateStats();
                 updateCharts();
                 
-                alert('All data has been cleared! Starting fresh! 🌟');
+                alert('All data has been cleared! Starting fresh! ⚽');
             }
         }
 
@@ -914,7 +924,7 @@
             
             for (let day = 1; day <= today; day++) {
                 data.push({
-                    day: day,
+                    day: `Day ${day}`,
                     points: getPointsForDay(day)
                 });
             }
@@ -931,7 +941,7 @@
             for (let day = 1; day <= today; day++) {
                 cumulative += getPointsForDay(day);
                 data.push({
-                    day: day,
+                    day: `Day ${day}`,
                     cumulative: cumulative
                 });
             }
@@ -1007,7 +1017,7 @@
         function addGoal() {
             const name = elements.newGoalInput.value.trim();
             if (name) {
-                const emojis = ['⭐', '🌟', '✨', '💖', '🦄', '🌈', '🎀', '👑', '💫', '🌸', '🦋', '🎨'];
+                const emojis = ['⚽', '🥅', '🏆', '⭐', '🎯', '💪', '🔥', '⚡', '🏃', '🎮'];
                 const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
                 
                 state.goals.push({
@@ -1102,7 +1112,7 @@
                 dayElement.className = dayClass;
                 dayElement.innerHTML = `
                     <div>${day}</div>
-                    ${!isFuture && points === state.goals.length && state.goals.length > 0 ? '<div class="star">⭐</div>' : ''}
+                    ${!isFuture && points === state.goals.length && state.goals.length > 0 ? '<div class="trophy">🏆</div>' : ''}
                     ${!isFuture && points > 0 ? `<div class="day-points">${points}/${state.goals.length}</div>` : ''}
                 `;
                 
@@ -1129,9 +1139,9 @@
             
             // Update total goals text
             const monthPoints = getMonthPoints();
-            elements.totalGoalsText.textContent = `${monthPoints} Points! 🎉✨`;
+            elements.totalGoalsText.textContent = `${monthPoints} Goals! 🎯⚽`;
             
-            // Render charts using Recharts
+            // Render charts
             renderDailyChart(dailyData);
             renderCumulativeChart(cumulativeData);
             
@@ -1139,7 +1149,7 @@
             const pieData = getPieData();
             if (pieData.length > 0) {
                 elements.pieChartContainer.classList.remove('hidden');
-                renderPieLegend(pieData);
+                renderPieChart(pieData);
             } else {
                 elements.pieChartContainer.classList.add('hidden');
             }
@@ -1147,88 +1157,203 @@
 
         // Render daily points chart
         function renderDailyChart(data) {
-            if (data.length === 0) return;
+            if (state.charts.daily) {
+                state.charts.daily.destroy();
+            }
             
-            const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+            const ctx = elements.dailyChart.getContext('2d');
             
-            const DailyChart = () => (
-                React.createElement(ResponsiveContainer, { width: "100%", height: 250 },
-                    React.createElement(LineChart, { data: data },
-                        React.createElement(CartesianGrid, { strokeDasharray: "3 3", stroke: "#fbb6ce" }),
-                        React.createElement(XAxis, { 
-                            dataKey: "day", 
-                            stroke: "#db2777",
-                            tick: { fill: '#db2777' }
-                        }),
-                        React.createElement(YAxis, { 
-                            stroke: "#db2777",
-                            tick: { fill: '#db2777' }
-                        }),
-                        React.createElement(Tooltip, {
-                            contentStyle: {
-                                backgroundColor: '#fce7f3',
-                                border: '3px solid #f9a8d4',
-                                borderRadius: '15px',
-                                fontWeight: 'bold',
-                                color: '#db2777'
+            if (data.length === 0 || data.every(item => item.points === 0)) {
+                elements.dailyChart.parentElement.innerHTML = '<div class="no-data">Complete some goals to see your daily progress! ⚽</div>';
+                return;
+            }
+            
+            state.charts.daily = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => item.day),
+                    datasets: [{
+                        label: 'Daily Goals',
+                        data: data.map(item => item.points),
+                        borderColor: '#059669',
+                        backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                        borderWidth: 4,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#059669',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 9
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#d1fae5',
+                            titleColor: '#15803d',
+                            bodyColor: '#15803d',
+                            borderColor: '#34d399',
+                            borderWidth: 2,
+                            cornerRadius: 12
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(134, 239, 172, 0.3)'
+                            },
+                            ticks: {
+                                color: '#15803d',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
                             }
-                        }),
-                        React.createElement(Line, {
-                            type: "monotone",
-                            dataKey: "points",
-                            stroke: "#ec4899",
-                            strokeWidth: 4,
-                            dot: { fill: '#a855f7', r: 6 },
-                            activeDot: { r: 9, stroke: '#ec4899', strokeWidth: 2 }
-                        })
-                    )
-                )
-            );
-            
-            ReactDOM.render(React.createElement(DailyChart), elements.dailyChart);
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(134, 239, 172, 0.3)'
+                            },
+                            ticks: {
+                                color: '#15803d',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // Render cumulative points chart
         function renderCumulativeChart(data) {
-            if (data.length === 0) return;
+            if (state.charts.cumulative) {
+                state.charts.cumulative.destroy();
+            }
             
-            const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+            const ctx = elements.cumulativeChart.getContext('2d');
             
-            const CumulativeChart = () => (
-                React.createElement(ResponsiveContainer, { width: "100%", height: 250 },
-                    React.createElement(LineChart, { data: data },
-                        React.createElement(CartesianGrid, { strokeDasharray: "3 3", stroke: "#c4b5fd" }),
-                        React.createElement(XAxis, { 
-                            dataKey: "day", 
-                            stroke: "#7c3aed",
-                            tick: { fill: '#7c3aed' }
-                        }),
-                        React.createElement(YAxis, { 
-                            stroke: "#7c3aed",
-                            tick: { fill: '#7c3aed' }
-                        }),
-                        React.createElement(Tooltip, {
-                            contentStyle: {
-                                backgroundColor: '#ede9fe',
-                                border: '3px solid #c4b5fd',
-                                borderRadius: '15px',
-                                fontWeight: 'bold',
-                                color: '#7c3aed'
+            if (data.length === 0 || data.every(item => item.cumulative === 0)) {
+                elements.cumulativeChart.parentElement.innerHTML = '<div class="no-data">Complete some goals to see your total progress! 🎯</div>';
+                return;
+            }
+            
+            state.charts.cumulative = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(item => item.day),
+                    datasets: [{
+                        label: 'Total Goals',
+                        data: data.map(item => item.cumulative),
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderWidth: 4,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#2563eb',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 9
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#dbeafe',
+                            titleColor: '#1e40af',
+                            bodyColor: '#1e40af',
+                            borderColor: '#60a5fa',
+                            borderWidth: 2,
+                            cornerRadius: 12
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(147, 197, 253, 0.3)'
+                            },
+                            ticks: {
+                                color: '#1e40af',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
                             }
-                        }),
-                        React.createElement(Line, {
-                            type: "monotone",
-                            dataKey: "cumulative",
-                            stroke: "#a855f7",
-                            strokeWidth: 4,
-                            dot: { fill: '#3b82f6', r: 6 },
-                            activeDot: { r: 9, stroke: '#a855f7', strokeWidth: 2 }
-                        })
-                    )
-                )
-            );
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(147, 197, 253, 0.3)'
+                            },
+                            ticks: {
+                                color: '#1e40af',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render pie chart
+        function renderPieChart(data) {
+            if (state.charts.pie) {
+                state.charts.pie.destroy();
+            }
             
-            ReactDOM.render(React.createElement(CumulativeChart), elements.cumulativeChart);
+            const ctx = elements.pieChart.getContext('2d');
+            const COLORS = ['#10b981', '#059669', '#047857', '#3b82f6', '#2563eb', '#1d4ed8', '#f59e0b', '#d97706'];
+            
+            state.charts.pie = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.map(item => item.name),
+                    datasets: [{
+                        data: data.map(item => item.value),
+                        backgroundColor: COLORS.slice(0, data.length),
+                        borderColor: 'white',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#fed7aa',
+                            titleColor: '#ea580c',
+                            bodyColor: '#ea580c',
+                            borderColor: '#fb923c',
+                            borderWidth: 2,
+                            cornerRadius: 12
+                        }
+                    }
+                }
+            });
+            
+            // Update legend
+            renderPieLegend(data);
         }
 
         // Open day modal
@@ -1248,8 +1373,8 @@
             
             if (state.goals.length === 0) {
                 elements.modalGoals.innerHTML = `
-                    <p style="text-align: center; color: #ec4899; padding: 2rem; font-weight: 600; font-size: 1.125rem;">
-                        Add some goals to start tracking! 🦄🌈
+                    <p style="text-align: center; color: #065f46; padding: 2rem; font-weight: 600; font-size: 1.125rem;">
+                        Add some goals to start tracking! ⚽🎯
                     </p>
                 `;
             } else {
@@ -1322,7 +1447,7 @@
         function renderPieLegend(data) {
             elements.pieLegend.innerHTML = '';
             
-            const COLORS = ['#ff6b9d', '#c084fc', '#fbbf24', '#60a5fa', '#a78bfa', '#f472b6', '#fb923c', '#34d399'];
+            const COLORS = ['#10b981', '#059669', '#047857', '#3b82f6', '#2563eb', '#1d4ed8', '#f59e0b', '#d97706'];
             
             data.forEach((item, index) => {
                 const legendItem = document.createElement('div');
@@ -1342,30 +1467,30 @@
             const achievements = [
                 {
                     id: 1,
-                    name: "Magical Start",
+                    name: "First Goal",
                     description: "Complete your first goal",
-                    emoji: "🌟",
+                    emoji: "⚽",
                     unlocked: state.goals.length > 0
                 },
                 {
                     id: 2,
-                    name: "Rainbow Rider",
-                    description: "Complete 20 magical points",
-                    emoji: "🌈",
+                    name: "Hat Trick Hero",
+                    description: "Complete 20 goals",
+                    emoji: "🔥",
                     unlocked: getMonthPoints() >= 20
                 },
                 {
                     id: 3,
-                    name: "Unicorn Princess",
-                    description: "Complete 50 magical points",
-                    emoji: "🦄",
+                    name: "Team Captain",
+                    description: "Complete 50 goals",
+                    emoji: "👕",
                     unlocked: getMonthPoints() >= 50
                 },
                 {
                     id: 4,
-                    name: "Sparkle Queen",
-                    description: "Complete 100 magical points",
-                    emoji: "👑",
+                    name: "Golden Boot",
+                    description: "Complete 100 goals",
+                    emoji: "🥇",
                     unlocked: getMonthPoints() >= 100
                 }
             ];
