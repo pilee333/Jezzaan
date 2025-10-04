@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Magical Habit Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom right, #fbcfe8, #ddd6fe, #93c5fd);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            border: 4px solid #f9a8d4;
+        }
+
+        .header {
+            background: linear-gradient(to right, #ec4899, #a855f7, #3b82f6);
+            padding: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 8rem;
+            opacity: 0.2;
+        }
+
+        .stats {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            padding: 0.75rem 1.25rem;
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 4px solid #f9a8d4;
+            background: linear-gradient(to right, #fdf2f8, #faf5ff);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #ec4899;
+            border-bottom: 4px solid #ec4899;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:not(.active) {
+            color: #6b7280;
+        }
+
+        .tab:not(.active):hover {
+            color: #ec4899;
+        }
+
+        .content {
+            padding: 1.5rem;
+            background: linear-gradient(to bottom right, rgba(253, 242, 248, 0.5), rgba(250, 245, 255, 0.5));
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #fdf2f8, #faf5ff);
+            border-radius: 1.5rem;
+            padding: 1.25rem;
+            border: 4px solid #f9a8d4;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #ec4899;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 3px solid #f9a8d4;
+            border-radius: 1rem;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            border-color: #ec4899;
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(to right, #ec4899, #db2777);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 1rem;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: linear-gradient(to right, #db2777, #be185d);
+        }
+
+        .btn-clear {
+            background: linear-gradient(to right, #6b7280, #4b5563);
+            margin-left: 0.5rem;
+        }
+
+        .btn-clear:hover {
+            background: linear-gradient(to right, #4b5563, #374151);
+        }
+
+        .goals-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .goal-tag {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.5rem 1rem;
+            border: 3px solid #f9a8d4;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .goal-tag span {
+            font-weight: bold;
+            font-size: 0.875rem;
+            color: #be185d;
+        }
+
+        .delete-btn {
+            color: #ec4899;
+            cursor: pointer;
+            margin-left: 0.25rem;
+        }
+
+        .delete-btn:hover {
+            color: #be185d;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.75rem;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            border-radius: 1rem;
+            padding: 0.5rem;
+            font-weight: bold;
+            font-size: 1.125rem;
+            position: relative;
+            border: 3px solid;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .day.future {
+            background: #f3f4f6;
+            color: #d1d5db;
+            border-color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .day.today {
+            background: linear-gradient(to bottom right, #fcd34d, #f9a8d4);
+            color: white;
+            border-color: #fcd34d;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+
+        .day.completed {
+            background: linear-gradient(to bottom right, #ec4899, #a855f7);
+            color: white;
+            border-color: #ec4899;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .day.partial {
+            background: linear-gradient(to bottom right, #fbcfe8, #ddd6fe);
+            color: #7c3aed;
+            border-color: #f9a8d4;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .day.default {
+            background: white;
+            border-color: #f9a8d4;
+        }
+
+        .day.default:hover {
+            border-color: #ec4899;
+            background: #fdf2f8;
+        }
+
+        .star {
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .day-points {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 50;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 1rem;
+            max-width: 28rem;
+            width: 100%;
+            max-height: 80vh;
+            overflow: auto;
+            border: 4px solid #ec4899;
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, #ec4899, #a855f7, #3b82f6);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem 0.75rem 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 4rem;
+            opacity: 0.2;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            padding: 0.5rem;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .modal-stats {
+            margin-top: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-content {
+            padding: 1.5rem;
+            background: linear-gradient(to bottom right, #fdf2f8, #faf5ff);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .goal-item {
+            width: 100%;
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+            border: 3px solid;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .goal-item.completed {
+            background: linear-gradient(to right, #ec4899, #a855f7);
+            color: white;
+            border-color: #ec4899;
+        }
+
+        .goal-item:not(.completed) {
+            background: white;
+            border-color: #f9a8d4;
+        }
+
+        .goal-item:not(.completed):hover {
+            background: #fdf2f8;
+        }
+
+        .goal-emoji {
+            font-size: 2.25rem;
+        }
+
+        .goal-name {
+            flex: 1;
+            text-align: left;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+
+        .goal-check {
+            font-size: 1.5rem;
+        }
+
+        .chart-container {
+            margin-bottom: 1.5rem;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            border: 4px solid;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container.pink {
+            background: linear-gradient(to bottom right, #fdf2f8, #fce7f3);
+            border-color: #f9a8d4;
+        }
+
+        .chart-container.purple {
+            background: linear-gradient(to bottom right, #faf5ff, #ede9fe);
+            border-color: #a855f7;
+        }
+
+        .chart-container.yellow {
+            background: linear-gradient(to bottom right, #fef3c7, #fef3c7);
+            border-color: #fcd34d;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart {
+            width: 100%;
+            height: 250px;
+        }
+
+        .total-goals {
+            margin-top: 1rem;
+            text-align: center;
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 3px solid #a855f7;
+        }
+
+        .total-goals p:first-child {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: #7c3aed;
+        }
+
+        .total-goals p:last-child {
+            color: #ec4899;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .pie-legend {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            border: 2px solid #f9a8d4;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-color {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .achievement {
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            border: 4px solid;
+            transition: all 0.3s;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .achievement.unlocked {
+            background: linear-gradient(to bottom right, #fef3c7, #fbcfe8, #ddd6fe);
+            border-color: #fcd34d;
+            animation: pulse 2s infinite;
+        }
+
+        .achievement.locked {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            opacity: 0.6;
+        }
+
+        .achievement-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .achievement-icon {
+            font-size: 4rem;
+        }
+
+        .achievement-info h3 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #be185d;
+            margin-bottom: 0.25rem;
+        }
+
+        .achievement-info p {
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .achievement-unlocked {
+            color: #059669;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .floating-icon {
+            position: fixed;
+            font-size: 4rem;
+            opacity: 0.2;
+            z-index: 0;
+        }
+
+        .floating-icon:nth-child(1) {
+            top: 2.5rem;
+            left: 2.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        .floating-icon:nth-child(2) {
+            top: 5rem;
+            right: 5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .floating-icon:nth-child(3) {
+            bottom: 5rem;
+            left: 5rem;
+            animation: bounce 2s infinite;
+        }
+
+        .floating-icon:nth-child(4) {
+            bottom: 2.5rem;
+            right: 2.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.3; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .sparkle {
+            animation: sparkle 1.5s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        .storage-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorative elements -->
+    <div class="floating-icon">🦄</div>
+    <div class="floating-icon">🌈</div>
+    <div class="floating-icon">✨</div>
+    <div class="floating-icon">💖</div>
+
+    <div class="container">
+        <div class="card">
+            <!-- Header with Unicorn Theme -->
+            <div class="header">
+                <div class="header-icon">🦄</div>
+                <h1>
+                    <span style="font-size: 3rem;">🦄</span>
+                    My Magical Habit Tracker
+                    <i class="fas fa-sparkles sparkle" style="font-size: 2.5rem;"></i>
+                </h1>
+                <div class="stats">
+                    <div class="stat-box">
+                        <i class="fas fa-star" style="color: #fcd34d;"></i>
+                        <span>Today: <span id="today-points">0</span></span>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-heart" style="color: #f9a8d4;"></i>
+                        <span>This Month: <span id="month-points">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="tracker">🌈 My Tracker</div>
+                <div class="tab" data-tab="stats">📊 My Progress</div>
+                <div class="tab" data-tab="rewards">🏆 My Rewards</div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Tracker Tab -->
+                <div id="tracker-content" class="tab-content">
+                    <!-- Add Goal Section -->
+                    <div class="section">
+                        <h3>
+                            <i class="fas fa-star" style="color: #ec4899;"></i>
+                            My Goals
+                        </h3>
+                        <div class="input-group">
+                            <input type="text" id="new-goal-input" placeholder="Add a magical goal...">
+                            <button class="btn" id="add-goal-btn">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                        <div class="goals-container" id="goals-container">
+                            <!-- Goals will be added here dynamically -->
+                        </div>
+                        <div class="storage-controls">
+                            <button class="btn btn-clear" id="clear-data-btn">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Calendar -->
+                    <h3 style="font-size: 1.5rem; font-weight: bold; color: #ec4899; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 2rem;">🌸</span>
+                        <span id="current-month-year">June 2023</span>
+                    </h3>
+                    <div class="calendar" id="calendar">
+                        <!-- Calendar days will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Stats Tab -->
+                <div id="stats-content" class="tab-content hidden">
+                    <h2 style="font-size: 1.875rem; font-weight: bold; color: #ec4899; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-chart-line"></i>
+                        My Magical Progress
+                        <i class="fas fa-sparkles sparkle" style="color: #a855f7;"></i>
+                    </h2>
+                    
+                    <!-- Daily Points Chart -->
+                    <div class="chart-container pink">
+                        <h3 class="chart-title">
+                            <i class="fas fa-star" style="color: #ec4899;"></i>
+                            Daily Sparkle Points
+                        </h3>
+                        <div class="chart" id="daily-chart">
+                            <!-- Chart will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Cumulative Points Chart -->
+                    <div class="chart-container purple">
+                        <h3 class="chart-title">
+                            <i class="fas fa-heart" style="color: #a855f7;"></i>
+                            Total Magic Collected
+                        </h3>
+                        <div class="chart" id="cumulative-chart">
+                            <!-- Chart will be rendered here -->
+                        </div>
+                        <div class="total-goals">
+                            <p id="total-goals-text">0 Points! 🎉✨</p>
+                            <p>You're doing amazing!</p>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart for Goals -->
+                    <div class="chart-container yellow hidden" id="pie-chart-container">
+                        <h3 class="chart-title">
+                            <span style="font-size: 1.5rem;">🌈</span>
+                            My Goal Rainbow
+                        </h3>
+                        <div class="chart" id="pie-chart">
+                            <!-- Pie chart will be rendered here -->
+                        </div>
+                        <div class="pie-legend" id="pie-legend">
+                            <!-- Legend items will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rewards Tab -->
+                <div id="rewards-content" class="tab-content hidden">
+                    <h2 style="font-size: 1.875rem; font-weight: bold; color: #ec4899; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-trophy" style="color: #fcd34d;"></i>
+                        My Magical Achievements
+                        <span style="font-size: 2rem;">🦄</span>
+                    </h2>
+                    <div class="achievements-grid" id="achievements-grid">
+                        <!-- Achievements will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day Detail Modal -->
+    <div class="modal-overlay hidden" id="day-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-header-icon">🦄</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10;">
+                    <h2>
+                        <span style="font-size: 2rem;">🌈</span>
+                        <span id="modal-date">June 15</span>
+                    </h2>
+                    <button class="modal-close" id="close-modal">
+                        <i class="fas fa-times" style="font-size: 1.5rem;"></i>
+                    </button>
+                </div>
+                <p class="modal-stats">
+                    <i class="fas fa-star"></i>
+                    <span id="modal-points">0 / 0 goals scored</span>
+                </p>
+            </div>
+            <div class="modal-content" id="modal-goals">
+                <!-- Goal items will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        // Storage keys
+        const STORAGE_KEYS = {
+            GOALS: 'magical_habit_tracker_goals',
+            COMPLETIONS: 'magical_habit_tracker_completions'
+        };
+
+        // App state
+        const state = {
+            activeTab: 'tracker',
+            goals: [],
+            completions: {},
+            selectedDay: null,
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear()
+        };
+
+        // DOM elements
+        const elements = {
+            todayPoints: document.getElementById('today-points'),
+            monthPoints: document.getElementById('month-points'),
+            newGoalInput: document.getElementById('new-goal-input'),
+            addGoalBtn: document.getElementById('add-goal-btn'),
+            clearDataBtn: document.getElementById('clear-data-btn'),
+            goalsContainer: document.getElementById('goals-container'),
+            currentMonthYear: document.getElementById('current-month-year'),
+            calendar: document.getElementById('calendar'),
+            dayModal: document.getElementById('day-modal'),
+            modalDate: document.getElementById('modal-date'),
+            modalPoints: document.getElementById('modal-points'),
+            modalGoals: document.getElementById('modal-goals'),
+            closeModal: document.getElementById('close-modal'),
+            tabContents: {
+                tracker: document.getElementById('tracker-content'),
+                stats: document.getElementById('stats-content'),
+                rewards: document.getElementById('rewards-content')
+            },
+            dailyChart: document.getElementById('daily-chart'),
+            cumulativeChart: document.getElementById('cumulative-chart'),
+            pieChartContainer: document.getElementById('pie-chart-container'),
+            pieLegend: document.getElementById('pie-legend'),
+            totalGoalsText: document.getElementById('total-goals-text'),
+            achievementsGrid: document.getElementById('achievements-grid')
+        };
+
+        // Load data from local storage
+        function loadFromStorage() {
+            try {
+                // Load goals
+                const savedGoals = localStorage.getItem(STORAGE_KEYS.GOALS);
+                if (savedGoals) {
+                    state.goals = JSON.parse(savedGoals);
+                } else {
+                    // Default goals if no saved data
+                    state.goals = [
+                        { id: 1, name: 'Brush Teeth', emoji: '🦷' },
+                        { id: 2, name: 'Do Homework', emoji: '📚' },
+                        { id: 3, name: 'Practice Piano', emoji: '🎹' }
+                    ];
+                }
+
+                // Load completions
+                const savedCompletions = localStorage.getItem(STORAGE_KEYS.COMPLETIONS);
+                if (savedCompletions) {
+                    state.completions = JSON.parse(savedCompletions);
+                }
+            } catch (error) {
+                console.error('Error loading data from storage:', error);
+                // Reset to default if there's an error
+                state.goals = [
+                    { id: 1, name: 'Brush Teeth', emoji: '🦷' },
+                    { id: 2, name: 'Do Homework', emoji: '📚' },
+                    { id: 3, name: 'Practice Piano', emoji: '🎹' }
+                ];
+                state.completions = {};
+            }
+        }
+
+        // Save data to local storage
+        function saveToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(state.goals));
+                localStorage.setItem(STORAGE_KEYS.COMPLETIONS, JSON.stringify(state.completions));
+            } catch (error) {
+                console.error('Error saving data to storage:', error);
+            }
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all your data? This cannot be undone!')) {
+                state.goals = [
+                    { id: 1, name: 'Brush Teeth', emoji: '🦷' },
+                    { id: 2, name: 'Do Homework', emoji: '📚' },
+                    { id: 3, name: 'Practice Piano', emoji: '🎹' }
+                ];
+                state.completions = {};
+                
+                saveToStorage();
+                renderGoals();
+                renderCalendar();
+                updateStats();
+                updateCharts();
+                
+                alert('All data has been cleared! Starting fresh! 🌟');
+            }
+        }
+
+        // Get points for a specific day
+        function getPointsForDay(day) {
+            return state.goals.filter(goal => {
+                const key = `${state.currentYear}-${state.currentMonth}-${day}-${goal.id}`;
+                return state.completions[key];
+            }).length;
+        }
+
+        // Get total points for the month up to today
+        function getMonthPoints() {
+            const today = new Date().getDate();
+            let total = 0;
+            
+            for (let day = 1; day <= today; day++) {
+                total += getPointsForDay(day);
+            }
+            
+            return total;
+        }
+
+        // Get daily points data for chart
+        function getDailyPointsData() {
+            const today = new Date().getDate();
+            const data = [];
+            
+            for (let day = 1; day <= today; day++) {
+                data.push({
+                    day: day,
+                    points: getPointsForDay(day)
+                });
+            }
+            
+            return data;
+        }
+
+        // Get cumulative points data for chart
+        function getCumulativePointsData() {
+            const today = new Date().getDate();
+            const data = [];
+            let cumulative = 0;
+            
+            for (let day = 1; day <= today; day++) {
+                cumulative += getPointsForDay(day);
+                data.push({
+                    day: day,
+                    cumulative: cumulative
+                });
+            }
+            
+            return data;
+        }
+
+        // Initialize the app
+        function init() {
+            loadFromStorage();
+            setupEventListeners();
+            renderGoals();
+            renderCalendar();
+            updateStats();
+            setupTabs();
+            renderAchievements();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Add goal button
+            elements.addGoalBtn.addEventListener('click', addGoal);
+            elements.newGoalInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addGoal();
+            });
+
+            // Clear data button
+            elements.clearDataBtn.addEventListener('click', clearAllData);
+
+            // Close modal
+            elements.closeModal.addEventListener('click', () => {
+                elements.dayModal.classList.add('hidden');
+                state.selectedDay = null;
+            });
+
+            // Close modal when clicking outside
+            elements.dayModal.addEventListener('click', (e) => {
+                if (e.target === elements.dayModal) {
+                    elements.dayModal.classList.add('hidden');
+                    state.selectedDay = null;
+                }
+            });
+        }
+
+        // Set up tabs
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = tab.getAttribute('data-tab');
+                    Object.values(elements.tabContents).forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    elements.tabContents[tabId].classList.remove('hidden');
+                    
+                    // Update state
+                    state.activeTab = tabId;
+                    
+                    // If stats tab is selected, update charts
+                    if (tabId === 'stats') {
+                        updateCharts();
+                    }
+                });
+            });
+        }
+
+        // Add a new goal
+        function addGoal() {
+            const name = elements.newGoalInput.value.trim();
+            if (name) {
+                const emojis = ['⭐', '🌟', '✨', '💖', '🦄', '🌈', '🎀', '👑', '💫', '🌸', '🦋', '🎨'];
+                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                state.goals.push({
+                    id: Date.now(),
+                    name,
+                    emoji: randomEmoji
+                });
+                
+                elements.newGoalInput.value = '';
+                saveToStorage();
+                renderGoals();
+                renderCalendar();
+                updateStats();
+                updateCharts();
+            }
+        }
+
+        // Delete a goal
+        function deleteGoal(id) {
+            state.goals = state.goals.filter(goal => goal.id !== id);
+            saveToStorage();
+            renderGoals();
+            renderCalendar();
+            updateStats();
+            updateCharts();
+        }
+
+        // Render goals
+        function renderGoals() {
+            elements.goalsContainer.innerHTML = '';
+            
+            state.goals.forEach(goal => {
+                const goalElement = document.createElement('div');
+                goalElement.className = 'goal-tag';
+                goalElement.innerHTML = `
+                    <span class="goal-emoji">${goal.emoji}</span>
+                    <span class="goal-name">${goal.name}</span>
+                    <span class="delete-btn" data-id="${goal.id}">
+                        <i class="fas fa-times"></i>
+                    </span>
+                `;
+                
+                elements.goalsContainer.appendChild(goalElement);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    deleteGoal(id);
+                });
+            });
+        }
+
+        // Render calendar
+        function renderCalendar() {
+            // Update month/year display
+            const monthName = new Date(state.currentYear, state.currentMonth).toLocaleString('default', { month: 'long' });
+            elements.currentMonthYear.textContent = `${monthName} ${state.currentYear}`;
+            
+            // Calculate days in month
+            const daysInMonth = new Date(state.currentYear, state.currentMonth + 1, 0).getDate();
+            const today = new Date().getDate();
+            
+            // Clear calendar
+            elements.calendar.innerHTML = '';
+            
+            // Create day elements
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                
+                // Calculate points for this day
+                const points = getPointsForDay(day);
+                const isFuture = day > today;
+                const isToday = day === today;
+                
+                // Determine day class
+                let dayClass = 'day';
+                if (isFuture) {
+                    dayClass += ' future';
+                } else if (isToday) {
+                    dayClass += ' today';
+                } else if (points === state.goals.length && state.goals.length > 0) {
+                    dayClass += ' completed';
+                } else if (points > 0) {
+                    dayClass += ' partial';
+                } else {
+                    dayClass += ' default';
+                }
+                
+                dayElement.className = dayClass;
+                dayElement.innerHTML = `
+                    <div>${day}</div>
+                    ${!isFuture && points === state.goals.length && state.goals.length > 0 ? '<div class="star">⭐</div>' : ''}
+                    ${!isFuture && points > 0 ? `<div class="day-points">${points}/${state.goals.length}</div>` : ''}
+                `;
+                
+                // Add click event for non-future days
+                if (!isFuture) {
+                    dayElement.addEventListener('click', () => openDayModal(day));
+                }
+                
+                elements.calendar.appendChild(dayElement);
+            }
+        }
+
+        // Update stats display
+        function updateStats() {
+            const today = new Date().getDate();
+            elements.todayPoints.textContent = getPointsForDay(today);
+            elements.monthPoints.textContent = getMonthPoints();
+        }
+
+        // Update charts
+        function updateCharts() {
+            const dailyData = getDailyPointsData();
+            const cumulativeData = getCumulativePointsData();
+            
+            // Update total goals text
+            const monthPoints = getMonthPoints();
+            elements.totalGoalsText.textContent = `${monthPoints} Points! 🎉✨`;
+            
+            // Render charts using Recharts
+            renderDailyChart(dailyData);
+            renderCumulativeChart(cumulativeData);
+            
+            // Show/hide pie chart based on data
+            const pieData = getPieData();
+            if (pieData.length > 0) {
+                elements.pieChartContainer.classList.remove('hidden');
+                renderPieLegend(pieData);
+            } else {
+                elements.pieChartContainer.classList.add('hidden');
+            }
+        }
+
+        // Render daily points chart
+        function renderDailyChart(data) {
+            if (data.length === 0) return;
+            
+            const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+            
+            const DailyChart = () => (
+                React.createElement(ResponsiveContainer, { width: "100%", height: 250 },
+                    React.createElement(LineChart, { data: data },
+                        React.createElement(CartesianGrid, { strokeDasharray: "3 3", stroke: "#fbb6ce" }),
+                        React.createElement(XAxis, { 
+                            dataKey: "day", 
+                            stroke: "#db2777",
+                            tick: { fill: '#db2777' }
+                        }),
+                        React.createElement(YAxis, { 
+                            stroke: "#db2777",
+                            tick: { fill: '#db2777' }
+                        }),
+                        React.createElement(Tooltip, {
+                            contentStyle: {
+                                backgroundColor: '#fce7f3',
+                                border: '3px solid #f9a8d4',
+                                borderRadius: '15px',
+                                fontWeight: 'bold',
+                                color: '#db2777'
+                            }
+                        }),
+                        React.createElement(Line, {
+                            type: "monotone",
+                            dataKey: "points",
+                            stroke: "#ec4899",
+                            strokeWidth: 4,
+                            dot: { fill: '#a855f7', r: 6 },
+                            activeDot: { r: 9, stroke: '#ec4899', strokeWidth: 2 }
+                        })
+                    )
+                )
+            );
+            
+            ReactDOM.render(React.createElement(DailyChart), elements.dailyChart);
+        }
+
+        // Render cumulative points chart
+        function renderCumulativeChart(data) {
+            if (data.length === 0) return;
+            
+            const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+            
+            const CumulativeChart = () => (
+                React.createElement(ResponsiveContainer, { width: "100%", height: 250 },
+                    React.createElement(LineChart, { data: data },
+                        React.createElement(CartesianGrid, { strokeDasharray: "3 3", stroke: "#c4b5fd" }),
+                        React.createElement(XAxis, { 
+                            dataKey: "day", 
+                            stroke: "#7c3aed",
+                            tick: { fill: '#7c3aed' }
+                        }),
+                        React.createElement(YAxis, { 
+                            stroke: "#7c3aed",
+                            tick: { fill: '#7c3aed' }
+                        }),
+                        React.createElement(Tooltip, {
+                            contentStyle: {
+                                backgroundColor: '#ede9fe',
+                                border: '3px solid #c4b5fd',
+                                borderRadius: '15px',
+                                fontWeight: 'bold',
+                                color: '#7c3aed'
+                            }
+                        }),
+                        React.createElement(Line, {
+                            type: "monotone",
+                            dataKey: "cumulative",
+                            stroke: "#a855f7",
+                            strokeWidth: 4,
+                            dot: { fill: '#3b82f6', r: 6 },
+                            activeDot: { r: 9, stroke: '#a855f7', strokeWidth: 2 }
+                        })
+                    )
+                )
+            );
+            
+            ReactDOM.render(React.createElement(CumulativeChart), elements.cumulativeChart);
+        }
+
+        // Open day modal
+        function openDayModal(day) {
+            state.selectedDay = day;
+            
+            // Update modal header
+            const monthName = new Date(state.currentYear, state.currentMonth).toLocaleString('default', { month: 'long' });
+            elements.modalDate.textContent = `${monthName} ${day}`;
+            
+            // Update points
+            const points = getPointsForDay(day);
+            elements.modalPoints.textContent = `${points} / ${state.goals.length} goals scored`;
+            
+            // Render goal items
+            elements.modalGoals.innerHTML = '';
+            
+            if (state.goals.length === 0) {
+                elements.modalGoals.innerHTML = `
+                    <p style="text-align: center; color: #ec4899; padding: 2rem; font-weight: 600; font-size: 1.125rem;">
+                        Add some goals to start tracking! 🦄🌈
+                    </p>
+                `;
+            } else {
+                state.goals.forEach(goal => {
+                    const key = `${state.currentYear}-${state.currentMonth}-${day}-${goal.id}`;
+                    const isCompleted = state.completions[key];
+                    
+                    const goalItem = document.createElement('div');
+                    goalItem.className = `goal-item ${isCompleted ? 'completed' : ''}`;
+                    goalItem.innerHTML = `
+                        <span class="goal-emoji">${goal.emoji}</span>
+                        <span class="goal-name">${goal.name}</span>
+                        <span class="goal-check">
+                            ${isCompleted ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle"></i>'}
+                        </span>
+                    `;
+                    
+                    goalItem.addEventListener('click', () => toggleGoalCompletion(goal.id, day));
+                    elements.modalGoals.appendChild(goalItem);
+                });
+            }
+            
+            // Show modal
+            elements.dayModal.classList.remove('hidden');
+        }
+
+        // Toggle goal completion
+        function toggleGoalCompletion(goalId, day) {
+            const key = `${state.currentYear}-${state.currentMonth}-${day}-${goalId}`;
+            state.completions[key] = !state.completions[key];
+            
+            // Save to storage
+            saveToStorage();
+            
+            // Re-render modal and update stats
+            openDayModal(day);
+            renderCalendar();
+            updateStats();
+            updateCharts();
+        }
+
+        // Get pie chart data
+        function getPieData() {
+            const today = new Date().getDate();
+            const data = [];
+            
+            state.goals.forEach(goal => {
+                let completedCount = 0;
+                
+                for (let day = 1; day <= today; day++) {
+                    const key = `${state.currentYear}-${state.currentMonth}-${day}-${goal.id}`;
+                    if (state.completions[key]) {
+                        completedCount++;
+                    }
+                }
+                
+                if (completedCount > 0) {
+                    data.push({
+                        name: goal.name,
+                        value: completedCount,
+                        emoji: goal.emoji
+                    });
+                }
+            });
+            
+            return data;
+        }
+
+        // Render pie chart legend
+        function renderPieLegend(data) {
+            elements.pieLegend.innerHTML = '';
+            
+            const COLORS = ['#ff6b9d', '#c084fc', '#fbbf24', '#60a5fa', '#a78bfa', '#f472b6', '#fb923c', '#34d399'];
+            
+            data.forEach((item, index) => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.innerHTML = `
+                    <span class="legend-color" style="background-color: ${COLORS[index % COLORS.length]}"></span>
+                    <span class="legend-emoji">${item.emoji}</span>
+                    <span class="legend-text">${item.name}: ${item.value}</span>
+                `;
+                
+                elements.pieLegend.appendChild(legendItem);
+            });
+        }
+
+        // Render achievements
+        function renderAchievements() {
+            const achievements = [
+                {
+                    id: 1,
+                    name: "Magical Start",
+                    description: "Complete your first goal",
+                    emoji: "🌟",
+                    unlocked: state.goals.length > 0
+                },
+                {
+                    id: 2,
+                    name: "Rainbow Rider",
+                    description: "Complete 20 magical points",
+                    emoji: "🌈",
+                    unlocked: getMonthPoints() >= 20
+                },
+                {
+                    id: 3,
+                    name: "Unicorn Princess",
+                    description: "Complete 50 magical points",
+                    emoji: "🦄",
+                    unlocked: getMonthPoints() >= 50
+                },
+                {
+                    id: 4,
+                    name: "Sparkle Queen",
+                    description: "Complete 100 magical points",
+                    emoji: "👑",
+                    unlocked: getMonthPoints() >= 100
+                }
+            ];
+            
+            elements.achievementsGrid.innerHTML = '';
+            
+            achievements.forEach(achievement => {
+                const achievementElement = document.createElement('div');
+                achievementElement.className = `achievement ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+                achievementElement.innerHTML = `
+                    <div class="achievement-content">
+                        <div class="achievement-icon">${achievement.emoji}</div>
+                        <div class="achievement-info">
+                            <h3>${achievement.name}</h3>
+                            <p>${achievement.description}</p>
+                            ${achievement.unlocked ? 
+                                '<div class="achievement-unlocked"><i class="fas fa-check-circle"></i> Unlocked!</div>' : 
+                                '<div class="achievement-unlocked"><i class="fas fa-lock"></i> Locked</div>'
+                            }
+                        </div>
+                    </div>
+                `;
+                
+                elements.achievementsGrid.appendChild(achievementElement);
+            });
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
